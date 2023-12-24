@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:chat_app/src/core/services/auth/auth_gate.dart';
 import 'package:chat_app/src/screen/home/home_screen.dart';
 import 'package:chat_app/utils/colors.dart';
 import 'package:chat_app/utils/costum_text.dart';
@@ -13,7 +14,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-
   @override
   void initState() {
     Timer(
@@ -21,7 +21,7 @@ class _SplashScreenState extends State<SplashScreen> {
       () => Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => const HomeScreen(),
+          builder: (context) => const AuthGate(),
         ),
       ),
     );

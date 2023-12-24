@@ -1,3 +1,4 @@
+import 'package:chat_app/src/core/services/auth/auth_service.dart';
 import 'package:chat_app/src/screen/auth/widget/expanded_button.dart';
 import 'package:chat_app/utils/colors.dart';
 import 'package:chat_app/utils/costum_text.dart';
@@ -6,6 +7,7 @@ import 'package:chat_app/utils/margin.dart';
 import 'package:chat_app/utils/text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   final void Function()? onTap;
@@ -27,6 +29,16 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         passIsHide = !passIsHide;
       });
+    }
+
+    void signIn() async {
+      final provider = Provider.of<AuthService>(context, listen: false);
+
+      try {
+        provider.signIn(emailController.text, passwordController.text);
+      } catch (e) {
+        throw e.toString();
+      }
     }
 
     Widget emailInput() {
@@ -161,7 +173,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         loadingButtonColor: primaryColor.withOpacity(.7),
                         textStyle: GoogleFonts.poppins(),
                         onTap: () {
-                          // signIn();
+                          signIn();
                         })
                   ],
                 ),

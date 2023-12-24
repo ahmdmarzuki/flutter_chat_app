@@ -1,3 +1,4 @@
+import 'package:chat_app/src/core/services/auth/auth_service.dart';
 import 'package:chat_app/src/screen/home/widget/my_status.dart';
 import 'package:chat_app/src/screen/home/widget/status_page.dart';
 import 'package:chat_app/utils/colors.dart';
@@ -6,6 +7,7 @@ import 'package:chat_app/utils/font_size.dart';
 import 'package:chat_app/utils/font_weight.dart';
 import 'package:chat_app/utils/margin.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'widget/contact_card.dart';
 import 'widget/contact_page.dart';
@@ -38,6 +40,15 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  void signOut() async {
+    final provider = Provider.of<AuthService>(context, listen: false);
+    try {
+      await provider.signOut();
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget header() {
@@ -66,8 +77,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   )
                 ],
               ),
-              const CircleAvatar(
-                radius: 25,
+              GestureDetector(
+                onTap: () {
+                  signOut();
+                },
+                child: const CircleAvatar(
+                  radius: 25,
+                ),
               )
             ],
           ),

@@ -1,3 +1,4 @@
+import 'package:chat_app/src/core/services/auth/auth_service.dart';
 import 'package:chat_app/src/screen/auth/widget/expanded_button.dart';
 import 'package:chat_app/utils/colors.dart';
 import 'package:chat_app/utils/costum_text.dart';
@@ -6,6 +7,7 @@ import 'package:chat_app/utils/margin.dart';
 import 'package:chat_app/utils/text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 class RegisterScreen extends StatefulWidget {
   final Function() onTap;
@@ -38,6 +40,19 @@ class _LoginScreenState extends State<RegisterScreen> {
       });
     }
 
+    void signUp() async {
+      if (passwordController.text == passwordConfirmationController.text) {
+        final provider = Provider.of<AuthService>(context, listen: false);
+
+        try {
+          provider.signUp(emailController.text.trim(),
+              passwordController.text.trim(), usernameController.text);
+        } catch (e) {
+          print("Error on sign up:" + e.toString());
+        }
+      }
+    }
+
     Widget usernameInput() {
       return Container(
           height: 50,
@@ -59,7 +74,7 @@ class _LoginScreenState extends State<RegisterScreen> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: TextFormField(
-                      controller: emailController,
+                      controller: usernameController,
                       style: poppinsWhite,
                       decoration: InputDecoration.collapsed(
                           hintText: "Username", hintStyle: poppinsGrey)),
@@ -166,7 +181,7 @@ class _LoginScreenState extends State<RegisterScreen> {
                 Expanded(
                   child: TextFormField(
                       obscureText: passConfirmIsHide ? true : false,
-                      controller: passwordController,
+                      controller: passwordConfirmationController,
                       style: poppinsWhite,
                       decoration: InputDecoration.collapsed(
                           hintText: "Re-Password", hintStyle: poppinsGrey)),
@@ -300,7 +315,9 @@ class _LoginScreenState extends State<RegisterScreen> {
                                             primaryColor.withOpacity(.8),
                                         textStyle: poppinsWhite,
                                         onTap: () {
-                                          // SignUp();
+                                          signUp();
+
+                                          Navigator.pop(context);
                                         },
                                       ),
                                       SizedBox(height: defaultMargin * 2),
