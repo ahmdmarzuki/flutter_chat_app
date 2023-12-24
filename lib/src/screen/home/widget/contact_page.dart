@@ -1,5 +1,8 @@
 import 'package:chat_app/src/screen/home/widget/contact_card.dart';
+import 'package:chat_app/utils/colors.dart';
+import 'package:chat_app/utils/costum_text.dart';
 import 'package:chat_app/utils/margin.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class ContactPage extends StatelessWidget {
@@ -9,16 +12,29 @@ class ContactPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      physics: const NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      itemCount: 10,
-      itemBuilder: (context, index) {
-        return const ContactCard();
-      },
-      separatorBuilder: (BuildContext context, int index) {
-        return SizedBox(height: defaultMargin);
-      },
-    );
+    return StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('users').snapshots(),
+        builder: ((context, snapshot) {
+          if (snapshot.hasError) {
+            return CostumText(text: "Error", color: white);
+          }
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return CircularProgressIndicator();
+          }
+
+          if (!snapshot.hasData) {
+            CostumText(text: "No Data", color: white);
+          }
+
+          return ListView(
+            shrinkWrap: true,
+            children: snapshot.data!.docs
+                .map<Widget>((doc) => ContactCard(
+                      doc: doc,
+                    ))
+                .toList(),
+          );
+        }));
   }
 }

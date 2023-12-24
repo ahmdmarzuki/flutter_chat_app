@@ -6,6 +6,7 @@ import 'package:chat_app/utils/costum_text.dart';
 import 'package:chat_app/utils/font_size.dart';
 import 'package:chat_app/utils/font_weight.dart';
 import 'package:chat_app/utils/margin.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -21,6 +22,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final User user = FirebaseAuth.instance.currentUser!;
+
   int navIndex = 0;
 
   List navOption = [
@@ -71,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     fontSize: FSize().medium,
                   ),
                   CostumText(
-                    text: "Fullname",
+                    text: user.displayName.toString(),
                     color: white,
                     fontSize: FSize().big,
                   )

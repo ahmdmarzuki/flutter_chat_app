@@ -1,21 +1,35 @@
+import 'package:chat_app/src/core/services/chat/chat_service.dart';
 import 'package:chat_app/utils/colors.dart';
 import 'package:chat_app/utils/costum_text.dart';
 import 'package:chat_app/utils/font_size.dart';
 import 'package:chat_app/utils/font_weight.dart';
 import 'package:chat_app/utils/margin.dart';
 import 'package:chat_app/utils/text_style.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'widget/bubble_chat.dart';
 
 class DetailChatScreen extends StatefulWidget {
-  const DetailChatScreen({super.key});
+  final String receiverName;
+  final String receiverUid;
+  const DetailChatScreen(
+      {super.key, required this.receiverName, required this.receiverUid});
 
   @override
   State<DetailChatScreen> createState() => _DetailChatScreenState();
 }
 
 class _DetailChatScreenState extends State<DetailChatScreen> {
+  final User user = FirebaseAuth.instance.currentUser!;
+  final ChatService chatService = ChatService();
+
+  TextEditingController messageController = TextEditingController();
+
+  void sendMessage() {
+    chatService.sendMessage(widget.receiverUid, messageController.text);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,12 +44,17 @@ class _DetailChatScreenState extends State<DetailChatScreen> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.arrow_back_ios_rounded,
-                    color: white,
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Icon(
+                      Icons.arrow_back_ios_rounded,
+                      color: white,
+                    ),
                   ),
                   const SizedBox(width: 12),
-                   CircleAvatar(
+                  CircleAvatar(
                     child: Image.asset('assets/image_profile.png'),
                   ),
                   const SizedBox(width: 20),
@@ -43,8 +62,16 @@ class _DetailChatScreenState extends State<DetailChatScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CostumText(text: 'Name', color: white, fontSize: FSize().medium,),
-                      CostumText(text: 'Sedang aktif', color: white, fontSize: FSize().small,)
+                      CostumText(
+                        text: widget.receiverName,
+                        color: white,
+                        fontSize: FSize().medium,
+                      ),
+                      CostumText(
+                        text: 'Sedang aktif',
+                        color: white,
+                        fontSize: FSize().small,
+                      )
                     ],
                   )
                 ],
@@ -60,14 +87,22 @@ class _DetailChatScreenState extends State<DetailChatScreen> {
           children: [
             Expanded(
               child: TextFormField(
+                controller: messageController,
                 style: poppinsWhite,
                 decoration: InputDecoration.collapsed(
                     hintText: "Type your message here", hintStyle: poppinsGrey),
               ),
             ),
-            Image.asset(
-              'assets/icon_submit.png',
-              width: 18,
+            GestureDetector(
+              onTap: () {
+                sendMessage();
+
+                messageController.clear();
+              },
+              child: Image.asset(
+                'assets/icon_submit.png',
+                width: 18,
+              ),
             )
           ],
         ),
@@ -78,18 +113,26 @@ class _DetailChatScreenState extends State<DetailChatScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              ListView.separated(
-                physics: const NeverScrollableScrollPhysics(),
-                reverse: true,
-                shrinkWrap: true,
-                itemCount: 5,
-                separatorBuilder: (context, index) {
-                  return const SizedBox(height: 30);
-                },
-                itemBuilder: (BuildContext context, int index) {
-                  return const BubbleChat(text: "tessss");
-                },
-              )
+              StreamBuilder(
+                  stream: chatService.getMessage(user.uid, widget.receiverUid),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    if (snapshot.hasError) {
+                      return CostumText(text: 'Error', color: white);
+                    }
+
+                    return ListView(
+                      shrinkWrap: true,
+                      children: snapshot.data!.docs
+                          .map((doc) => BubbleChat(
+                                doc: doc,
+                              ))
+                          .toList(),
+                    );
+                  })
             ],
           ),
         ),
