@@ -23,12 +23,12 @@ class BubbleChat extends StatelessWidget {
               BoxConstraints(maxWidth: MediaQuery.of(context).size.width * .6),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-              color: isSender ?primaryColor:accentBlack,
+              color: isSender ? primaryColor : accentBlack,
               borderRadius: BorderRadius.only(
                 topLeft: const Radius.circular(12),
-                bottomRight: Radius.circular(isSender?0:12),
+                bottomRight: Radius.circular(isSender ? 0 : 12),
                 topRight: const Radius.circular(12),
-                bottomLeft: Radius.circular(!isSender?0:12),
+                bottomLeft: Radius.circular(!isSender ? 0 : 12),
               )),
           child: CostumText(text: text, color: white, fontSize: FSize().medium),
         ),

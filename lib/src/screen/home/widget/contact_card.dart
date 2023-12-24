@@ -23,8 +23,9 @@ class ContactCard extends StatelessWidget {
         margin: EdgeInsets.symmetric(horizontal: defaultMargin),
         child: Row(
           children: [
-            const CircleAvatar(
+            CircleAvatar(
               radius: 25,
+              child: Image.asset('assets/image_profile.png'),
             ),
             const SizedBox(width: 12),
             Column(

@@ -1,4 +1,4 @@
-import 'package:chat_app/src/screen/widget/contact_card.dart';
+import 'package:chat_app/src/screen/home/widget/contact_card.dart';
 import 'package:chat_app/utils/margin.dart';
 import 'package:flutter/material.dart';
 

@@ -1,5 +1,5 @@
-import 'package:chat_app/src/screen/widget/my_status.dart';
-import 'package:chat_app/src/screen/widget/status_page.dart';
+import 'package:chat_app/src/screen/home/widget/my_status.dart';
+import 'package:chat_app/src/screen/home/widget/status_page.dart';
 import 'package:chat_app/utils/colors.dart';
 import 'package:chat_app/utils/costum_text.dart';
 import 'package:chat_app/utils/font_size.dart';
@@ -184,19 +184,17 @@ class _HomeScreenState extends State<HomeScreen> {
         appBar: PreferredSize(
             preferredSize: const Size.fromHeight(87), child: header()),
         body: SingleChildScrollView(
-          child: Container(
-            child: Column(
-              children: [
-                statusBar(),
-                SizedBox(height: defaultMargin),
-                searchBar(),
-                const SizedBox(height: 50),
-                navigation(),
-                SizedBox(height: defaultMargin),
-                navOption[navIndex],
-                SizedBox(height: defaultMargin)
-              ],
-            ),
+          child: Column(
+            children: [
+              statusBar(),
+              SizedBox(height: defaultMargin),
+              searchBar(),
+              const SizedBox(height: 50),
+              navigation(),
+              SizedBox(height: defaultMargin),
+              navOption[navIndex],
+              SizedBox(height: defaultMargin)
+            ],
           ),
         ));
   }

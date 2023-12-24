@@ -17,8 +17,9 @@ class StatusAvatar extends StatelessWidget {
           child: CircleAvatar(
             radius: 27,
             backgroundColor: accentBlack,
-            child: const CircleAvatar(
+            child: CircleAvatar(
               radius: 25,
+              child: Image.asset('assets/image_profile.png'),
             ),
           ),
         ),

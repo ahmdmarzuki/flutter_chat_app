@@ -12,7 +12,7 @@ class MyStatus extends StatelessWidget {
         Stack(
           clipBehavior: Clip.none,
           children: [
-             CircleAvatar(
+            CircleAvatar(
               radius: 27,
               child: Image.asset('assets/image_profile.png'),
             ),
