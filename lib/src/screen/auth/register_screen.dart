@@ -64,13 +64,13 @@ class _LoginScreenState extends State<RegisterScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: [
-                // Container(
-                //   width: 30,
-                //   child: Image.asset(
-                //     'assets/icon_username.png',
-                //     height: 20,
-                //   ),
-                // ),
+                Container(
+                  width: 30,
+                  child: Image.asset(
+                    'assets/icon_username.png',
+                    height: 20,
+                  ),
+                ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: TextFormField(
@@ -95,13 +95,13 @@ class _LoginScreenState extends State<RegisterScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: [
-                // Container(
-                //   width: 30,
-                //   child: Image.asset(
-                //     'assets/icon_email.png',
-                //     height: 20,
-                //   ),
-                // ),
+                Container(
+                  width: 30,
+                  child: Image.asset(
+                    'assets/icon_email.png',
+                    height: 20,
+                  ),
+                ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: TextFormField(
@@ -126,13 +126,13 @@ class _LoginScreenState extends State<RegisterScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: [
-                // Container(
-                //   width: 30,
-                //   child: Image.asset(
-                //     'assets/icon_password.png',
-                //     height: 25,
-                //   ),
-                // ),
+                Container(
+                  width: 30,
+                  child: Image.asset(
+                    'assets/icon_password.png',
+                    height: 25,
+                  ),
+                ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: TextFormField(
@@ -152,7 +152,7 @@ class _LoginScreenState extends State<RegisterScreen> {
                           ? 'assets/icon_eye_close.png'
                           : 'assets/icon_eye_open.png',
                       width: 20,
-                      color: white,
+                      color: white.withOpacity(.7),
                     ))
               ],
             ),
@@ -170,13 +170,13 @@ class _LoginScreenState extends State<RegisterScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: [
-                // Container(
-                //   width: 30,
-                //   child: Image.asset(
-                //     'assets/icon_password.png',
-                //     height: 25,
-                //   ),
-                // ),
+                Container(
+                  width: 30,
+                  child: Image.asset(
+                    'assets/icon_password.png',
+                    height: 25,
+                  ),
+                ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: TextFormField(
@@ -196,7 +196,7 @@ class _LoginScreenState extends State<RegisterScreen> {
                           ? 'assets/icon_eye_close.png'
                           : 'assets/icon_eye_open.png',
                       width: 20,
-                      color: white,
+                      color: white.withOpacity(.7),
                     ))
               ],
             ),
@@ -235,11 +235,11 @@ class _LoginScreenState extends State<RegisterScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Image.asset(
-                    //   'assets/image_register.png',
-                    //   height: 200,
-                    // ),
-                    // usernameInput(),
+                    Image.asset(
+                      'assets/image_register.png',
+                      width: 260,
+                    ),
+                    
                     const SizedBox(height: 20),
                     emailInput(),
                     const SizedBox(height: 20),

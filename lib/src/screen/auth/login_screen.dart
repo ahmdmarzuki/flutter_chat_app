@@ -52,13 +52,13 @@ class _LoginScreenState extends State<LoginScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: [
-                // Container(
-                //   width: 30,
-                //   child: Image.asset(
-                //     'assets/icon_email.png',
-                //     height: 20,
-                //   ),
-                // ),
+                Container(
+                  width: 30,
+                  child: Image.asset(
+                    'assets/icon_email.png',
+                    height: 20,
+                  ),
+                ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: TextFormField(
@@ -83,13 +83,13 @@ class _LoginScreenState extends State<LoginScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: [
-                // SizedBox(
-                //   width: 30,
-                //   child: Image.asset(
-                //     'assets/icon_password.png',
-                //     height: 25,
-                //   ),
-                // ),
+                SizedBox(
+                  width: 30,
+                  child: Image.asset(
+                    'assets/icon_password.png',
+                    height: 25,
+                  ),
+                ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: TextFormField(
@@ -109,7 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ? 'assets/icon_eye_close.png'
                           : 'assets/icon_eye_open.png',
                       width: 20,
-                      color: white,
+                      color: white.withOpacity(.7),
                     ))
               ],
             ),
@@ -132,7 +132,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CostumText(
-                      text: "Wellcome Back",
+                      text: "Welcome Back",
                       color: white,
                       fontSize: 32,
                       fontWeight: FWeight().medium,
@@ -147,7 +147,8 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(
                 child: Column(
                   children: [
-                    // Image.asset('assets/image_login.png'),
+                    Image.asset('assets/image_login.png', width: 250),
+                    SizedBox(height: defaultMargin),
                     emailInput(),
                     const SizedBox(height: 20),
                     passwordInput(),

@@ -1,3 +1,4 @@
+import 'package:chat_app/src/core/services/chat/chat_service.dart';
 import 'package:chat_app/src/screen/chat/detail_chat_screen.dart';
 import 'package:chat_app/utils/colors.dart';
 import 'package:chat_app/utils/costum_text.dart';
@@ -7,31 +8,49 @@ import 'package:chat_app/utils/margin.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class ContactCard extends StatelessWidget {
-  final DocumentSnapshot doc;
+  final DocumentSnapshot userDoc;
+
+  // final Stream chatDoc;
   const ContactCard({
     super.key,
-    required this.doc,
+    required this.userDoc,
   });
 
   @override
   Widget build(BuildContext context) {
-    Map<String, dynamic> data = doc.data()! as Map<String, dynamic>;
+    Map<String, dynamic> userData = userDoc.data()! as Map<String, dynamic>;
+    final User user = FirebaseAuth.instance.currentUser!;
+
+// ----- mengambil room Id dan menjadikannya stream untuk ditampilkan ------------
+    List<String> ids = [user.uid, userData['uid']];
+    ids.sort();
+    String chatRoomId = ids.join("-");
+
+    final Stream<DocumentSnapshot<Map<String, dynamic>>> chatStream =
+        FirebaseFirestore.instance
+            .collection('chat_rooms')
+            .doc(chatRoomId)
+            .collection('last_message')
+            .doc(chatRoomId)
+            .snapshots();
+// --------------------------------------------------------------------------------
 
     final FirebaseAuth auth = FirebaseAuth.instance;
 
-    if (auth.currentUser!.email != data['email']) {
+    if (auth.currentUser!.email != userData['email']) {
       return Container(
-        margin: EdgeInsets.symmetric(vertical: 12),
+        margin: const EdgeInsets.symmetric(vertical: 12),
         child: GestureDetector(
           onTap: () {
             Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) => DetailChatScreen(
-                          receiverName: data['username'],
-                          receiverUid: data['uid'],
+                          receiverName: userData['username'],
+                          receiverUid: userData['uid'],
                         )));
           },
           child: Container(
@@ -51,19 +70,43 @@ class ContactCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CostumText(
-                      text: data['username'],
+                      text: userData['username'],
                       color: white,
                       fontSize: FSize().medium,
                       fontWeight: FWeight().reguler,
                     ),
-                    CostumText(text: "Last text", color: white)
+                    StreamBuilder(
+                        stream: chatStream,
+                        builder: ((context, snapshot) {
+                          if (snapshot.hasData) {
+                            var chatData =
+                                snapshot.data!.data() as Map<String, dynamic>;
+
+                            return CostumText(
+                                text: chatData['last_message'], color: white);
+                          }
+
+                          return const SizedBox();
+                        }))
                   ],
                 ),
                 const Spacer(),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    CostumText(text: "05.08", color: white),
+                    StreamBuilder(
+                        stream: chatStream,
+                        builder: ((context, snapshot) {
+                          if (snapshot.hasData) {
+                            var chatData =
+                                snapshot.data!.data() as Map<String, dynamic>;
+                            
+                            return CostumText(
+                                text: chatData['sendAt'], color: white);
+                          }
+
+                          return const SizedBox();
+                        })),
                     Image.asset(
                       'assets/icon_check.png',
                       width: 22,
@@ -77,6 +120,6 @@ class ContactCard extends StatelessWidget {
       );
     }
 
-    return SizedBox();
+    return const SizedBox();
   }
 }

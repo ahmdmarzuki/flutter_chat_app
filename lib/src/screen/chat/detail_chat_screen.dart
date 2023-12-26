@@ -6,6 +6,7 @@ import 'package:chat_app/utils/font_weight.dart';
 import 'package:chat_app/utils/margin.dart';
 import 'package:chat_app/utils/text_style.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import 'widget/bubble_chat.dart';
@@ -26,8 +27,15 @@ class _DetailChatScreenState extends State<DetailChatScreen> {
 
   TextEditingController messageController = TextEditingController();
 
+  ScrollController scrollController = ScrollController();
+
   void sendMessage() {
     chatService.sendMessage(widget.receiverUid, messageController.text);
+  }
+
+  void scrollDown() {
+    scrollController.animateTo(scrollController.position.minScrollExtent,
+        duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
   }
 
   @override
@@ -98,6 +106,8 @@ class _DetailChatScreenState extends State<DetailChatScreen> {
                 sendMessage();
 
                 messageController.clear();
+
+                scrollDown();
               },
               child: Image.asset(
                 'assets/icon_submit.png',
@@ -110,30 +120,37 @@ class _DetailChatScreenState extends State<DetailChatScreen> {
       body: SafeArea(
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: defaultMargin),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              StreamBuilder(
-                  stream: chatService.getMessage(user.uid, widget.receiverUid),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
+          constraints: const BoxConstraints.expand(height: 800),
+          child: SingleChildScrollView(
+            controller: scrollController,
+            reverse: true,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                StreamBuilder(
+                    stream:
+                        chatService.getMessage(user.uid, widget.receiverUid),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
 
-                    if (snapshot.hasError) {
-                      return CostumText(text: 'Error', color: white);
-                    }
+                      if (snapshot.hasError) {
+                        return CostumText(text: 'Error', color: white);
+                      }
 
-                    return ListView(
-                      shrinkWrap: true,
-                      children: snapshot.data!.docs
-                          .map((doc) => BubbleChat(
-                                doc: doc,
-                              ))
-                          .toList(),
-                    );
-                  })
-            ],
+                      return ListView(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        children: snapshot.data!.docs
+                            .map((doc) => BubbleChat(
+                                  doc: doc,
+                                ))
+                            .toList(),
+                      );
+                    })
+              ],
+            ),
           ),
         ),
       ),

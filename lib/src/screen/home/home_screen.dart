@@ -6,6 +6,7 @@ import 'package:chat_app/utils/costum_text.dart';
 import 'package:chat_app/utils/font_size.dart';
 import 'package:chat_app/utils/font_weight.dart';
 import 'package:chat_app/utils/margin.dart';
+import 'package:chat_app/utils/text_style.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -24,12 +25,10 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final User user = FirebaseAuth.instance.currentUser!;
 
-  int navIndex = 0;
+  final TextEditingController searchController = TextEditingController();
+  String searchText = '';
 
-  List navOption = [
-    const ContactPage(),
-    const StatusPage(),
-  ];
+  int navIndex = 0;
 
   void navToStatusPage() {
     setState(() {
@@ -52,8 +51,22 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  void fetch() {
+    final String newSearchText = searchController.text;
+    setState(() {
+      searchText = newSearchText;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    List navOption = [
+      ContactPage(
+        searchText: searchText,
+      ),
+      const StatusPage(),
+    ];
+
     Widget header() {
       return Container(
         height: 120,
@@ -142,7 +155,17 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            CostumText(text: "Connect to others", color: grey),
+            Expanded(
+              child: TextFormField(
+                controller: searchController,
+                style: poppinsWhite,
+                onFieldSubmitted: (value) {
+                  fetch();
+                },
+                decoration: InputDecoration.collapsed(
+                    hintText: "Connect to others", hintStyle: poppinsGrey),
+              ),
+            ),
             Image.asset(
               'assets/icon_search.png',
               width: 24,
