@@ -29,7 +29,7 @@ class BubbleChat extends StatelessWidget {
             : MainAxisAlignment.start,
         children: [
           Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
+            crossAxisAlignment: doc['senderUid'] == user.uid? CrossAxisAlignment.end:CrossAxisAlignment.start,
             children: [
               Container(
                 constraints: BoxConstraints(

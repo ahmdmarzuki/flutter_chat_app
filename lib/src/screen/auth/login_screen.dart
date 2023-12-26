@@ -119,67 +119,69 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: accentBlack,
-      body: SafeArea(
-        child: Container(
-          padding: EdgeInsets.symmetric(
-              horizontal: defaultMargin, vertical: defaultMargin * 2),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CostumText(
-                      text: "Welcome Back",
-                      color: white,
-                      fontSize: 32,
-                      fontWeight: FWeight().medium,
-                    ),
-                    CostumText(
-                        text: "It's been a long time since you left",
-                        color: grey,
-                        fontWeight: FWeight().light)
-                  ],
+      body: SingleChildScrollView(
+        child: SafeArea(
+          child: Container(
+            padding: EdgeInsets.symmetric(
+                horizontal: defaultMargin, vertical: defaultMargin * 2),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CostumText(
+                        text: "Welcome Back",
+                        color: white,
+                        fontSize: 32,
+                        fontWeight: FWeight().medium,
+                      ),
+                      CostumText(
+                          text: "It's been a long time since you left",
+                          color: grey,
+                          fontWeight: FWeight().light)
+                    ],
+                  ),
                 ),
-              ),
-              SizedBox(
-                child: Column(
-                  children: [
-                    Image.asset('assets/image_login.png', width: 250),
-                    SizedBox(height: defaultMargin),
-                    emailInput(),
-                    const SizedBox(height: 20),
-                    passwordInput(),
-                    SizedBox(height: defaultMargin * 2),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        CostumText(
-                            text: "Don't have any account?", color: grey),
-                        const SizedBox(width: 4),
-                        GestureDetector(
-                            onTap: widget.onTap,
-                            child: CostumText(
-                                text: "Register", color: primaryColor))
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    ExpandedButton(
-                        text: "Login",
-                        isLoading: isLoading,
-                        textColor: white,
-                        buttonColor: primaryColor,
-                        loadingButtonColor: primaryColor.withOpacity(.7),
-                        textStyle: GoogleFonts.poppins(),
-                        onTap: () {
-                          signIn();
-                        })
-                  ],
+                SizedBox(
+                  child: Column(
+                    children: [
+                      Image.asset('assets/image_login.png', width: 250),
+                      SizedBox(height: defaultMargin),
+                      emailInput(),
+                      const SizedBox(height: 20),
+                      passwordInput(),
+                      SizedBox(height: defaultMargin * 2),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CostumText(
+                              text: "Don't have any account?", color: grey),
+                          const SizedBox(width: 4),
+                          GestureDetector(
+                              onTap: widget.onTap,
+                              child: CostumText(
+                                  text: "Register", color: primaryColor))
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      ExpandedButton(
+                          text: "Login",
+                          isLoading: isLoading,
+                          textColor: white,
+                          buttonColor: primaryColor,
+                          loadingButtonColor: primaryColor.withOpacity(.7),
+                          textStyle: GoogleFonts.poppins(),
+                          onTap: () {
+                            signIn();
+                          })
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

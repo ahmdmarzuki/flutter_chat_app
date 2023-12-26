@@ -44,7 +44,12 @@ class ChatService extends ChangeNotifier {
         .doc(chatRoomId)
         .collection('last_message')
         .doc(db.collection('chat_rooms').doc(chatRoomId).id)
-        .set({'last_message': message, 'sendAt': formattedSendAt});
+        .set({
+      'last_message': message,
+      'sendAt': formattedSendAt,
+      'senderUid':currentUserUid,
+      'read': false
+    });
   }
 
   Stream<QuerySnapshot> getMessage(String userUid, String otherUserUid) {

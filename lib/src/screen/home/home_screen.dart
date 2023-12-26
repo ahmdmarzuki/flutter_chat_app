@@ -69,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     Widget header() {
       return Container(
-        height: 120,
+        height: 130,
         decoration: BoxDecoration(color: accentBlack),
         padding: EdgeInsets.symmetric(horizontal: defaultMargin),
         child: SafeArea(
@@ -97,8 +97,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 onTap: () {
                   signOut();
                 },
-                child: const CircleAvatar(
+                child: CircleAvatar(
                   radius: 25,
+                  child: Image.asset('assets/image_profile.png'),
                 ),
               )
             ],
@@ -204,7 +205,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Container(
               height: 50,
               margin: EdgeInsets.symmetric(horizontal: defaultMargin),
-              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 8),
               decoration: BoxDecoration(
                   color: navIndex == 1 ? accentBlack : bg1,
                   borderRadius: BorderRadius.circular(25)),
