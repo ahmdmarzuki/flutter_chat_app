@@ -11,7 +11,7 @@
             "deviceId": "emulator-5554"
         },
         {
-            "name": "pixel-4",
+            "name": "pixel-7-pro-2",
             "request": "launch",
             "type": "dart",
             "deviceId": "emulator-5556"
@@ -27,7 +27,7 @@
     "compounds": [
         {
           "name": "All Devices",
-          "configurations": ["pixel-7-pro", "pixel-4"]
+          "configurations": ["pixel-7-pro", "pixel-7-pro-2"]
         }
       ]
 }

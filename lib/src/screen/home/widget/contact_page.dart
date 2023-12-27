@@ -35,7 +35,7 @@ class ContactPage extends StatelessWidget {
               shrinkWrap: true,
               children: snapshot.data!.docs.map<Widget>((doc) {
                 return ContactCard(
-                  userDoc: doc,
+                  userDoc: doc, searchText: searchText,
                 );
               }).toList(),
             );
@@ -52,7 +52,7 @@ class ContactPage extends StatelessWidget {
                 shrinkWrap: true,
                 children: filteredDocs.map<Widget>((doc) {
                   return ContactCard(
-                    userDoc: doc,
+                    userDoc: doc, searchText: searchText,
                   );
                 }).toList());
           }
