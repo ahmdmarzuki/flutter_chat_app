@@ -44,4 +44,17 @@ class AuthService extends ChangeNotifier {
       throw e.toString();
     }
   }
+
+  Future<void> updateDisplayName(String username) async {
+    try {
+      await auth.currentUser!.updateDisplayName(username);
+
+      db
+          .collection('users')
+          .doc(auth.currentUser!.uid)
+          .update({'username': username});
+    } catch (e) {
+      throw e.toString();
+    }
+  }
 }

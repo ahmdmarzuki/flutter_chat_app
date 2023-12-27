@@ -1,4 +1,5 @@
 import 'package:chat_app/src/core/services/auth/auth_service.dart';
+import 'package:chat_app/src/screen/home/profile_setting_setting.dart';
 import 'package:chat_app/src/screen/home/widget/my_status.dart';
 import 'package:chat_app/src/screen/home/widget/status_page.dart';
 import 'package:chat_app/utils/colors.dart';
@@ -7,6 +8,7 @@ import 'package:chat_app/utils/font_size.dart';
 import 'package:chat_app/utils/font_weight.dart';
 import 'package:chat_app/utils/margin.dart';
 import 'package:chat_app/utils/text_style.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -42,14 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void signOut() async {
-    final provider = Provider.of<AuthService>(context, listen: false);
-    try {
-      await provider.signOut();
-    } catch (e) {
-      throw e.toString();
-    }
-  }
+  
 
   void fetch() {
     final String newSearchText = searchController.text;
@@ -86,16 +81,30 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: white,
                     fontSize: FSize().medium,
                   ),
-                  CostumText(
-                    text: user.displayName.toString(),
-                    color: white,
-                    fontSize: FSize().big,
-                  )
+                  StreamBuilder(
+                      stream: FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(user.uid)
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        var data =
+                            snapshot.data!.data() as Map<String, dynamic>;
+                        return CostumText(
+                          text: data['username'],
+                          color: white,
+                          fontSize: FSize().big,
+                        );
+                      })
                 ],
               ),
               GestureDetector(
                 onTap: () {
-                  signOut();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ProfileSettingScreen(),
+                    ),
+                  );
                 },
                 child: CircleAvatar(
                   radius: 25,
