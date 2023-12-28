@@ -49,43 +49,28 @@ class ContactCard extends StatelessWidget {
       return StreamBuilder(
         stream: chatStream,
         builder: (context, snapshot) {
-
 // jika terdapat data dalam database ------------------------------------------
           if (snapshot.hasData) {
             // ignore: unnecessary_cast
             var chatData = snapshot.data!.data() as Map<String, dynamic>? ?? {};
-            
+
 // ---------Jika user punya riwayat chat---------------------------------------
 //----------maka tampilkan di home screen--------------------------------------
-            if (chatData['last_message'] != null) {
+            if (chatData['last_message'] != null || searchText != '') {
               return Card(
                   userData: userData,
                   chatData: chatData,
                   user: user,
                   db: db,
                   chatRoomId: chatRoomId);
-            }
-
-// ---------Jika searchbar punya value-------------------------------------------
-//----------maka akan menampilkan list user sesuai value searcbar----------------
-             else if (searchText != '') {
-              return Card(
-                  userData: userData,
-                  chatData: chatData,
-                  user: user,
-                  db: db,
-                  chatRoomId: chatRoomId);
+            } else if (snapshot.connectionState == ConnectionState.waiting) {
+              return const CircularProgressIndicator();
             } else {
               return const SizedBox();
             }
-          } else if (snapshot.hasError) {
-            return CostumText(
-              text: 'Error: ${snapshot.error}',
-              color: white,
-            );
-          } else {
-            return const SizedBox();
           }
+
+          return const SizedBox();
         },
       );
     }
@@ -93,7 +78,6 @@ class ContactCard extends StatelessWidget {
     return const SizedBox();
   }
 }
-
 
 // Card widget  ---------------------------------------------------------------
 class Card extends StatelessWidget {
@@ -126,7 +110,7 @@ class Card extends StatelessWidget {
           ),
         );
 
-        if (chatData['senderUid'] ?? '' != user.uid) {
+        if (chatData['senderUid'] != user.uid) {
           db
               .collection('chat_rooms')
               .doc(chatRoomId)
@@ -138,7 +122,8 @@ class Card extends StatelessWidget {
       child: Container(
         height: 50,
         width: double.infinity,
-        margin: EdgeInsets.symmetric(horizontal: defaultMargin),
+        color: bg1,
+        margin: EdgeInsets.symmetric(horizontal: defaultMargin, vertical: 20),
         child: Row(
           children: [
             Stack(

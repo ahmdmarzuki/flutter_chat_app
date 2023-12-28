@@ -4,11 +4,12 @@ import 'package:chat_app/utils/costum_text.dart';
 import 'package:chat_app/utils/font_size.dart';
 import 'package:chat_app/utils/font_weight.dart';
 import 'package:chat_app/utils/margin.dart';
-import 'package:chat_app/utils/text_style.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 
 class ProfileSettingScreen extends StatefulWidget {
   const ProfileSettingScreen({super.key});
@@ -39,6 +40,15 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
       throw e.toString();
     }
   }
+
+  // Future<void> uploadImage() async {
+  //   final provider = Provider.of<AuthService>(context, listen: false);
+  //   try {
+  //     await provider.profileImagePicker();
+  //   } catch (e) {
+  //     throw e.toString();
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -76,6 +86,8 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
                   GestureDetector(
                     onTap: () {
                       signOut();
+
+                      Navigator.pop(context);
                     },
                     child: CostumText(
                       text: "Sign Out",
@@ -93,15 +105,23 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
           child: Column(
             children: [
               const SizedBox(height: 100),
-              CircleAvatar(
-                radius: 50,
-                child: Image.asset('assets/image_profile.png'),
+              GestureDetector(
+                onTap: () async {
+                  print('Pick image');
+                  final XFile? pickedFile = await ImagePicker()
+                      .pickImage(source: ImageSource.gallery);
+                  if (pickedFile == null) return;
+                },
+                child: CircleAvatar(
+                  radius: 50,
+                  child: Image.asset('assets/image_profile.png'),
+                ),
               ),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 50),
+                    const SizedBox(height: 100),
                     CustomForm(
                       formTitle: 'Username',
                       hintText: user.displayName,
@@ -133,7 +153,7 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
                       children: [
                         InkWell(
                           onTap: () {
-                            if (usernameController.text=='') {
+                            if (usernameController.text == '') {
                               print("Tidak ada perubahan");
                             } else {
                               updateDisplayName();

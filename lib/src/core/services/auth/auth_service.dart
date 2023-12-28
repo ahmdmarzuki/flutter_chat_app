@@ -1,10 +1,15 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AuthService extends ChangeNotifier {
   final FirebaseAuth auth = FirebaseAuth.instance;
   final FirebaseFirestore db = FirebaseFirestore.instance;
+  final FirebaseStorage storage = FirebaseStorage.instance;
 
   Future<UserCredential> signUp(
       String email, String password, String username) async {
@@ -55,6 +60,14 @@ class AuthService extends ChangeNotifier {
           .update({'username': username});
     } catch (e) {
       throw e.toString();
+    }
+  }
+
+  Future<void> profileImagePicker() async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.camera);
+    if (pickedFile != null) {
+      return;
     }
   }
 }

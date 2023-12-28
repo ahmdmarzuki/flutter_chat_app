@@ -32,12 +32,14 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     void signIn() async {
-      final provider = Provider.of<AuthService>(context, listen: false);
+      if (emailController.text != '' && passwordController.text != '') {
+        final provider = Provider.of<AuthService>(context, listen: false);
 
-      try {
-        provider.signIn(emailController.text, passwordController.text);
-      } catch (e) {
-        throw e.toString();
+        try {
+          provider.signIn(emailController.text, passwordController.text);
+        } catch (e) {
+          throw e.toString();
+        }
       }
     }
 

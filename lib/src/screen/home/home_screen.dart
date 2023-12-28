@@ -1,4 +1,5 @@
 import 'package:chat_app/src/core/services/auth/auth_service.dart';
+import 'package:chat_app/src/core/services/status/status_service.dart';
 import 'package:chat_app/src/screen/home/profile_setting_setting.dart';
 import 'package:chat_app/src/screen/home/widget/my_status.dart';
 import 'package:chat_app/src/screen/home/widget/status_page.dart';
@@ -32,6 +33,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   int navIndex = 0;
 
+  final StatusService statusService = StatusService();
+
   void navToStatusPage() {
     setState(() {
       navIndex = 1;
@@ -43,8 +46,6 @@ class _HomeScreenState extends State<HomeScreen> {
       navIndex = 0;
     });
   }
-
-  
 
   void fetch() {
     final String newSearchText = searchController.text;
@@ -87,6 +88,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           .doc(user.uid)
                           .snapshots(),
                       builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return const SizedBox();
+                        }
                         var data =
                             snapshot.data!.data() as Map<String, dynamic>;
                         return CostumText(
@@ -130,24 +134,46 @@ class _HomeScreenState extends State<HomeScreen> {
         child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           physics: const BouncingScrollPhysics(),
-          child: Row(
-            children: [
-              SizedBox(width: defaultMargin),
-              const MyStatus(),
-              const SizedBox(width: 12),
-              ListView.separated(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                scrollDirection: Axis.horizontal,
-                itemCount: 5,
-                separatorBuilder: (context, index) => const SizedBox(
-                  width: 16,
-                ),
-                itemBuilder: (BuildContext context, int index) {
-                  return const StatusAvatar();
-                },
-              ),
-            ],
+          child: Expanded(
+            child: Row(
+              children: [
+                SizedBox(width: defaultMargin),
+                const MyStatus(),
+                const SizedBox(width: 12),
+                StreamBuilder(
+                    stream: statusService.getStatus(),
+                    builder: ((context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+
+                      if (snapshot.hasError) {
+                        return CostumText(text: 'Error', color: white);
+                      }
+
+                      // var data = snapshot.data?.docs as Map<String, dynamic>;
+                      return ListView(
+                        scrollDirection: Axis.horizontal,
+                        shrinkWrap: true,
+                        children: snapshot.data!.docs
+                            .map((doc) => StatusAvatar(doc: doc))
+                            .toList(),
+                      );
+                    }))
+                // ListView.separated(
+                //   physics: const NeverScrollableScrollPhysics(),
+                //   shrinkWrap: true,
+                //   scrollDirection: Axis.horizontal,
+                //   itemCount: 5,
+                //   separatorBuilder: (context, index) => const SizedBox(
+                //     width: 16,
+                //   ),
+                //   itemBuilder: (BuildContext context, int index) {
+                //     return const StatusAvatar();
+                //   },
+                // ),
+              ],
+            ),
           ),
         ),
       );
