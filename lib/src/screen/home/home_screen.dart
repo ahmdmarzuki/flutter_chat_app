@@ -1,6 +1,7 @@
 import 'package:chat_app/src/core/services/auth/auth_service.dart';
 import 'package:chat_app/src/core/services/status/status_service.dart';
 import 'package:chat_app/src/screen/home/profile_setting_setting.dart';
+import 'package:chat_app/src/screen/home/status_view.dart';
 import 'package:chat_app/src/screen/home/widget/my_status.dart';
 import 'package:chat_app/src/screen/home/widget/status_page.dart';
 import 'package:chat_app/utils/colors.dart';
@@ -18,6 +19,8 @@ import 'widget/contact_card.dart';
 import 'widget/contact_page.dart';
 import 'widget/status_avatar.dart';
 
+int currentIndex = 0;
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -32,6 +35,8 @@ class _HomeScreenState extends State<HomeScreen> {
   String searchText = '';
 
   int navIndex = 0;
+
+  int statusAvatarIndex = 0;
 
   final StatusService statusService = StatusService();
 
@@ -53,6 +58,12 @@ class _HomeScreenState extends State<HomeScreen> {
       searchText = newSearchText;
     });
   }
+
+  // void onPageChanged(value) {
+  //   setState(() {
+  //     statusAvatarIndex = value;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -140,38 +151,97 @@ class _HomeScreenState extends State<HomeScreen> {
                 SizedBox(width: defaultMargin),
                 const MyStatus(),
                 const SizedBox(width: 12),
+
                 StreamBuilder(
-                    stream: statusService.getStatus(),
-                    builder: ((context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
+                    stream: FirebaseFirestore.instance
+                        .collection('users')
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      final List<DocumentSnapshot<Map<String, dynamic>>>
+                          userDocs = snapshot.data!.docs;
 
-                      if (snapshot.hasError) {
-                        return CostumText(text: 'Error', color: white);
-                      }
+                      return ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: userDocs.length,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: ((context, index) {
+                            DocumentSnapshot<Map<String, dynamic>> userDoc =
+                                userDocs[index];
 
-                      // var data = snapshot.data?.docs as Map<String, dynamic>;
-                      return ListView(
-                        scrollDirection: Axis.horizontal,
-                        shrinkWrap: true,
-                        children: snapshot.data!.docs
-                            .map((doc) => StatusAvatar(doc: doc))
-                            .toList(),
-                      );
-                    }))
-                // ListView.separated(
-                //   physics: const NeverScrollableScrollPhysics(),
-                //   shrinkWrap: true,
-                //   scrollDirection: Axis.horizontal,
-                //   itemCount: 5,
-                //   separatorBuilder: (context, index) => const SizedBox(
-                //     width: 16,
-                //   ),
-                //   itemBuilder: (BuildContext context, int index) {
-                //     return const StatusAvatar();
-                //   },
-                // ),
+                            int initialUserIndex = index;
+                            // DocumentSnapshot<Map<String, dynamic>>
+                            //     onTapUserDoc = userDocs[currentIndex];
+
+                            return StreamBuilder(
+                                stream: FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc(userDoc.id)
+                                    .collection('status')
+                                    .snapshots(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasData) {
+                                    final List<Map<String, dynamic>>
+                                        statusList = snapshot.data!.docs
+                                            .take(1)
+                                            .map((doc) => doc.data())
+                                            .toList();
+
+                                    return ListView.builder(
+                                      shrinkWrap: true,
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: statusList.length,
+                                      itemBuilder: (context, index) {
+                                        return StatusAvatar(
+                                          username: statusList[0]['username'],
+                                          uid: statusList[0]['uid'],
+                                          text: statusList[0]['text'],
+                                          userDoc: userDoc,
+                                          initialIndex: initialUserIndex,
+                                        );
+                                      },
+                                    );
+
+                                    // CostumText(
+                                    //     text: statusList.toString(),
+                                    //     color: white);
+
+                                    // StatusAvatar(
+                                    //   username: statusList[0]['username'],
+                                    //   uid: statusList[0]['uid'],
+                                    //   text: statusList[0]['text'],
+                                    // );
+                                  }
+                                  return const SizedBox();
+                                });
+                          }));
+                    })
+                // StreamBuilder(
+                //     stream: FirebaseFirestore.instance
+                //         .collection('status')
+                //         .doc()
+                //         .snapshots(),
+                //     builder: ((context, snapshot) {
+                //       // final List<Map<String, dynamic>> statusData =
+                //       //     snapshot.data!.docs.map((doc) => doc.data()).toList();
+                //       if (snapshot.connectionState == ConnectionState.waiting) {
+                //         return const Center(child: CircularProgressIndicator());
+                //       }
+
+                //       if (snapshot.hasError) {
+                //         return CostumText(text: 'Error', color: white);
+                //       }
+
+                //       // var data = snapshot.data?.docs as Map<String, dynamic>;
+                //       return ListView(
+                //         scrollDirection: Axis.horizontal,
+                //         shrinkWrap: true,
+                //         children: snapshot.data!.docs
+                //             .map((doc) => StatusAvatar(
+                //                   snapshot: doc,
+                //                 ))
+                //             .toList(),
+                //       );
+                //     }))
               ],
             ),
           ),

@@ -1,3 +1,4 @@
+import 'package:chat_app/src/core/models/status_model.dart';
 import 'package:chat_app/src/core/services/status/status_service.dart';
 import 'package:chat_app/utils/colors.dart';
 import 'package:chat_app/utils/costum_text.dart';
@@ -21,7 +22,6 @@ class _AddStatusScreenState extends State<AddStatusScreen> {
 
   void addStatus() async {
     final service = Provider.of<StatusService>(context, listen: false);
-    
 
     try {
       await service.addStatus(statusTextController.text);

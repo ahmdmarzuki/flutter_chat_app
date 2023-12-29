@@ -10,15 +10,21 @@ class StatusService extends ChangeNotifier {
 
   Future<void> addStatus(String text) async {
     final User user = auth.currentUser!;
+    final String? username = user.displayName;
+    final String uid = user.uid;
 
-    StatusModel newStatus =
-        StatusModel(text: text, username: user.displayName, uid: user.uid);
-    await db.collection('status').doc(user.uid).set(
-          newStatus.toMap(),
-        );
+    try {
+      await db.collection('users').doc(uid).collection('status').add({
+        'text': text,
+        'username': username,
+        'uid': uid,
+      });
+    } catch (e) {
+      throw e.toString();
+    }
   }
 
   Stream<QuerySnapshot> getStatus() {
-    return db.collection('status').snapshots();
+    return db.collection('status').doc().collection('status').snapshots();
   }
 }
