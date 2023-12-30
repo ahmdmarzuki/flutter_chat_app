@@ -151,97 +151,76 @@ class _HomeScreenState extends State<HomeScreen> {
                 SizedBox(width: defaultMargin),
                 const MyStatus(),
                 const SizedBox(width: 12),
-
                 StreamBuilder(
                     stream: FirebaseFirestore.instance
                         .collection('users')
                         .snapshots(),
                     builder: (context, snapshot) {
-                      final List<DocumentSnapshot<Map<String, dynamic>>>
-                          userDocs = snapshot.data!.docs;
+                      if (snapshot.hasData) {
+                        final List<DocumentSnapshot<Map<String, dynamic>>>
+                            userDocs = snapshot.data!.docs;
+                        final List<DocumentSnapshot<Map<String, dynamic>>>
+                            otheUserDocs = snapshot.data!.docs
+                                .where((element) =>
+                                    element.data()['uid'] != user.uid &&
+                                    element.data()['hasStatus'] == true)
+                                .toList();
 
-                      return ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: userDocs.length,
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder: ((context, index) {
-                            DocumentSnapshot<Map<String, dynamic>> userDoc =
-                                userDocs[index];
+                        return ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: userDocs.length,
+                            scrollDirection: Axis.horizontal,
+                            itemBuilder: ((context, index) {
+                              DocumentSnapshot<Map<String, dynamic>> userDoc =
+                                  userDocs[index];
 
-                            int initialUserIndex = index;
-                            // DocumentSnapshot<Map<String, dynamic>>
-                            //     onTapUserDoc = userDocs[currentIndex];
+                              int initialUserIndex = index;
 
-                            return StreamBuilder(
-                                stream: FirebaseFirestore.instance
-                                    .collection('users')
-                                    .doc(userDoc.id)
-                                    .collection('status')
-                                    .snapshots(),
-                                builder: (context, snapshot) {
-                                  if (snapshot.hasData) {
-                                    final List<Map<String, dynamic>>
-                                        statusList = snapshot.data!.docs
-                                            .take(1)
-                                            .map((doc) => doc.data())
-                                            .toList();
+                              return StreamBuilder(
+                                  stream: FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(userDoc.id)
+                                      .collection('status')
+                                      .snapshots(),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.hasData) {
+                                      final List<Map<String, dynamic>>
+                                          statusListAvatar = snapshot.data!.docs
+                                              .take(1)
+                                              .map((doc) => doc.data())
+                                              .toList();
 
-                                    return ListView.builder(
-                                      shrinkWrap: true,
-                                      scrollDirection: Axis.horizontal,
-                                      itemCount: statusList.length,
-                                      itemBuilder: (context, index) {
-                                        return StatusAvatar(
-                                          username: statusList[0]['username'],
-                                          uid: statusList[0]['uid'],
-                                          text: statusList[0]['text'],
-                                          userDoc: userDoc,
-                                          initialIndex: initialUserIndex,
-                                        );
-                                      },
-                                    );
+                                      final List<Map<String, dynamic>>
+                                          statusList = snapshot.data!.docs
+                                              .map((doc) => doc.data())
+                                              .toList();
 
-                                    // CostumText(
-                                    //     text: statusList.toString(),
-                                    //     color: white);
+                                      return ListView.builder(
+                                        shrinkWrap: true,
+                                        scrollDirection: Axis.horizontal,
+                                        itemCount: statusListAvatar.length,
+                                        itemBuilder: (context, index) {
+                                          return StatusAvatar(
+                                            username: statusListAvatar[0]
+                                                ['username'],
+                                            uid: statusListAvatar[0]['uid'],
+                                            text: statusListAvatar[0]['text'],
+                                            userDoc: userDoc,
+                                            initialIndex: initialUserIndex,
+                                            statusList: statusList,
+                                            userDocs: otheUserDocs,
+                                          );
+                                        },
+                                      );
 
-                                    // StatusAvatar(
-                                    //   username: statusList[0]['username'],
-                                    //   uid: statusList[0]['uid'],
-                                    //   text: statusList[0]['text'],
-                                    // );
-                                  }
-                                  return const SizedBox();
-                                });
-                          }));
+                                     
+                                    }
+                                    return const SizedBox();
+                                  });
+                            }));
+                      }
+                      return CostumText(text: "No Data", color: white);
                     })
-                // StreamBuilder(
-                //     stream: FirebaseFirestore.instance
-                //         .collection('status')
-                //         .doc()
-                //         .snapshots(),
-                //     builder: ((context, snapshot) {
-                //       // final List<Map<String, dynamic>> statusData =
-                //       //     snapshot.data!.docs.map((doc) => doc.data()).toList();
-                //       if (snapshot.connectionState == ConnectionState.waiting) {
-                //         return const Center(child: CircularProgressIndicator());
-                //       }
-
-                //       if (snapshot.hasError) {
-                //         return CostumText(text: 'Error', color: white);
-                //       }
-
-                //       // var data = snapshot.data?.docs as Map<String, dynamic>;
-                //       return ListView(
-                //         scrollDirection: Axis.horizontal,
-                //         shrinkWrap: true,
-                //         children: snapshot.data!.docs
-                //             .map((doc) => StatusAvatar(
-                //                   snapshot: doc,
-                //                 ))
-                //             .toList(),
-                //       );
-                //     }))
               ],
             ),
           ),

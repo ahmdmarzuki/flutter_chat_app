@@ -6,6 +6,7 @@ import 'package:chat_app/utils/costum_text.dart';
 import 'package:chat_app/utils/font_size.dart';
 import 'package:chat_app/utils/font_weight.dart';
 import 'package:chat_app/utils/margin.dart';
+import 'package:chat_app/utils/status_color_list.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -13,11 +14,15 @@ import 'package:flutter/material.dart';
 class StatusView extends StatefulWidget {
   final DocumentSnapshot<Map<String, dynamic>> userDoc;
   final int initialIndex;
+  final List<Map<String, dynamic>> statusList;
+  final List<DocumentSnapshot<Map<String, dynamic>>> userDocs;
 
   const StatusView({
     super.key,
     required this.userDoc,
     required this.initialIndex,
+    required this.statusList,
+    required this.userDocs,
   });
 
   @override
@@ -26,6 +31,8 @@ class StatusView extends StatefulWidget {
 
 class _StatusViewState extends State<StatusView> {
   int currentStatusIndex = 0;
+
+  final List bgColor = StatusColor().bgColor;
 
   // @override
   // void initState() {
@@ -36,10 +43,11 @@ class _StatusViewState extends State<StatusView> {
 
   @override
   Widget build(BuildContext context) {
-    int currentUserIndex = widget.initialIndex;
+    // int currentUserIndex = widget.initialIndex;
 
     return Scaffold(
-        backgroundColor: Colors.green,
+        backgroundColor:
+            bgColor[widget.statusList[currentStatusIndex]['color_code']],
         body:
 
             // Stream User List ---------------------------------------
@@ -48,150 +56,145 @@ class _StatusViewState extends State<StatusView> {
                     FirebaseFirestore.instance.collection('users').snapshots(),
                 builder: (context, snapshot) {
                   // final User user = FirebaseAuth.instance.currentUser!;
-                  final List<DocumentSnapshot<Map<String, dynamic>>> userDocs =
-                      snapshot.data!.docs;
-                  // .where((element) => element.data()['uid'] != user.uid)
-                  // .toList();
+                  if (!snapshot.hasData) {
+                    return CostumText(text: "No Data", color: white);
+                  } else {
+                    final List<DocumentSnapshot<Map<String, dynamic>>>
+                        userDocs = snapshot.data!.docs;
+                    // .where((element) => element.data()['uid'] != user.uid)
+                    // .toList();
 
-                  return PageView.builder(
-                      controller:
-                          PageController(initialPage: widget.initialIndex),
-                      onPageChanged: (value) {
-                        setState(() {
-                          currentUserIndex = value;
-                          currentStatusIndex = 0;
-                        });
+                    return PageView.builder(
+                        controller:
+                            PageController(initialPage: widget.initialIndex),
+                        onPageChanged: (value) {
+                          setState(() {
+                            // currentUserIndex = value;
+                            currentStatusIndex = 0;
+                          });
+                        },
+                        itemCount: widget.userDocs.length,
+                        itemBuilder: (context, index) {
+                          // stream status list ----------------------------------------
+                          DocumentSnapshot<Map<String, dynamic>> statusDoc =
+                              userDocs[index];
 
-                        print(
-                            "currentUserIndex: " + currentUserIndex.toString());
-                      },
-                      itemCount: snapshot.data!.docs.length,
-                      itemBuilder: (context, index) {
-                        // stream status list ----------------------------------------
-                        DocumentSnapshot<Map<String, dynamic>> statusDoc =
-                            userDocs[index];
-
-                        return StreamBuilder(
-                          stream: FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(statusDoc.id)
-                              .collection('status')
-                              .snapshots(),
-                          builder: ((context, snapshot) {
-                            final List<Map<String, dynamic>> statusList =
-                                snapshot.data!.docs
-                                    .map((doc) => doc.data())
-                                    .toList();
-
-                            return Stack(
-                              children: [
-                                Positioned(
-                                  top: 0,
-                                  child: Container(
-                                    height: 87,
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: defaultMargin),
-                                    child: SafeArea(
-                                      child: Row(
-                                        children: [
-                                          CircleAvatar(
-                                            backgroundColor: white,
-                                            radius: 22,
-                                            child: CircleAvatar(
-                                              radius: 20,
-                                              child: Image.asset(
-                                                  'assets/image_profile.png'),
-                                            ),
+                          return StreamBuilder(
+                            stream: FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(statusDoc.id)
+                                .collection('status')
+                                .snapshots(),
+                            builder: ((context, snapshot) {
+                              if (!snapshot.hasData) {
+                                return CostumText(
+                                    text: "No Data", color: white);
+                              } else {
+                                return Stack(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () {
+                                            if (currentStatusIndex != 0) {
+                                              setState(() {
+                                                currentStatusIndex--;
+                                              });
+                                            }
+                                          },
+                                          child: Container(
+                                            height: MediaQuery.of(context)
+                                                .size
+                                                .height,
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width /
+                                                2,
+                                            // width: double.infinity,
+                                            color: bgColor[widget.statusList[
+                                                    currentStatusIndex]
+                                                ['color_code']],
                                           ),
-                                          const SizedBox(width: 20),
-                                          CostumText(
-                                            text: statusList[currentStatusIndex]
-                                                ['username'],
-                                            color: white,
-                                            fontSize: FSize().medium,
-                                          )
-                                        ],
+                                        ),
+                                        GestureDetector(
+                                          onTap: () {
+                                            if (currentStatusIndex !=
+                                                widget.statusList.length - 1) {
+                                              setState(() {
+                                                currentStatusIndex++;
+                                              });
+                                            } else if (currentStatusIndex ==
+                                                widget.statusList.length - 1) {
+                                              setState(() {
+                                                // currentUserIndex++;
+                                              });
+                                            }
+                                          },
+                                          child: Container(
+                                            height: MediaQuery.of(context)
+                                                .size
+                                                .height,
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width /
+                                                2,
+                                            // width: double.infinity,
+                                            color: bgColor[widget.statusList[
+                                                    currentStatusIndex]
+                                                ['color_code']],
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                    Positioned(
+                                      top: 0,
+                                      child: Container(
+                                        height: 87,
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: defaultMargin),
+                                        child: SafeArea(
+                                          child: Row(
+                                            children: [
+                                              CircleAvatar(
+                                                backgroundColor: white,
+                                                radius: 22,
+                                                child: CircleAvatar(
+                                                  radius: 20,
+                                                  child: Image.asset(
+                                                      'assets/image_profile.png'),
+                                                ),
+                                              ),
+                                              const SizedBox(width: 20),
+                                              CostumText(
+                                                text: widget.statusList[
+                                                        currentStatusIndex]
+                                                    ['username'],
+                                                color: white,
+                                                fontSize: FSize().medium,
+                                              )
+                                            ],
+                                          ),
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Row(
-                                    children: [
-                                      GestureDetector(
-                                        onTap: () {
-                                          if (currentStatusIndex != 0) {
-                                            setState(() {
-                                              currentStatusIndex--;
-                                            });
-                                          }
-
-                                          print(currentStatusIndex.toString());
-                                        },
-                                        child: Container(
-                                          height: MediaQuery.of(context)
-                                              .size
-                                              .height,
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width /
-                                              2,
-                                          // width: double.infinity,
-                                          color:
-                                              Colors.redAccent.withOpacity(.3),
-                                        ),
-                                      ),
-                                      GestureDetector(
-                                        onTap: () {
-                                          if (currentStatusIndex !=
-                                              statusList.length - 1) {
-                                            setState(() {
-                                              currentStatusIndex++;
-                                            });
-                                          } else if (currentStatusIndex ==
-                                              statusList.length - 1) {
-                                            setState(() {
-                                              currentUserIndex++;
-                                            });
-                                          }
-
-                                          print("currentStatusIndex: " +
-                                              currentStatusIndex.toString());
-                                          print("index: " + index.toString());
-                                        },
-                                        child: Container(
-                                          height: MediaQuery.of(context)
-                                              .size
-                                              .height,
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width /
-                                              2,
-                                          // width: double.infinity,
-                                          color: Colors.amber.withOpacity(.3),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                                Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: defaultMargin),
-                                  child: Expanded(
-                                    child: Center(
-                                        child: CostumText(
-                                            text: statusList[currentStatusIndex]
-                                                ['text'],
-                                            color: white,
-                                            fontSize: FSize().big,
-                                            fontWeight: FWeight().light)),
-                                  ),
-                                ),
-                              ],
-                            );
-                          }),
-                        );
-                      });
+                                    Container(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: defaultMargin),
+                                      child: Center(
+                                          child: CostumText(
+                                              text: widget.statusList[
+                                                  currentStatusIndex]['text'],
+                                              color: white,
+                                              fontSize: FSize().big,
+                                              fontWeight: FWeight().light)),
+                                    ),
+                                  ],
+                                );
+                              }
+                            }),
+                          );
+                        });
+                  }
                 }));
   }
 }

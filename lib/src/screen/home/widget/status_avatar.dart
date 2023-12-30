@@ -10,15 +10,19 @@ class StatusAvatar extends StatelessWidget {
   final String username;
   final String text;
   final int initialIndex;
-  
+  final List<Map<String, dynamic>> statusList;
+  final List<DocumentSnapshot<Map<String, dynamic>>> userDocs;
+
   final DocumentSnapshot<Map<String, dynamic>> userDoc;
-  const StatusAvatar({
-    super.key,
-    required this.username,
-    required this.uid,
-    required this.text,
-    required this.userDoc, required this.initialIndex,
-  });
+  const StatusAvatar(
+      {super.key,
+      required this.username,
+      required this.uid,
+      required this.text,
+      required this.userDoc,
+      required this.initialIndex,
+      required this.statusList,
+      required this.userDocs});
 
   @override
   Widget build(BuildContext context) {
@@ -36,8 +40,15 @@ class StatusAvatar extends StatelessWidget {
           children: [
             GestureDetector(
               onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (contetx) =>  StatusView(userDoc: userDoc, initialIndex: initialIndex,)));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (contetx) => StatusView(
+                              userDoc: userDoc,
+                              initialIndex: initialIndex,
+                              statusList: statusList,
+                              userDocs: userDocs,
+                            )));
               },
               child: CircleAvatar(
                 radius: 29,
